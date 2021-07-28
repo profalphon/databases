@@ -4,18 +4,29 @@ const User = require("../models/userModel");
 
 exports.signup = async (req, res, next) => {
   try {
-    let { firstName, lastName, email, password } = req.body;
-    // hash incoming password from req.body
-    password = await bcrypt.hash(password, 12);
+    const { firstName, lastName, email, password, phoneNumber, sex} = req.body;
+    console.log(req.body)
+    console.log({ firstName, lastName, email, password, phoneNumber, sex})
 
-    const newUser = { firstName, lastName, email, password };
+    const checkEmail = await User.findOne({email});
+
+      if(checkEmail){
+        return res.status(404).json({
+          status: "failed",
+          message: "Email already exists, try another one"
+        });
+      }
+
+    // hash incoming password from req.body
+    // hashedPassword = await bcrypt.hash(password, 12);
+
+    const newUser = { firstName, lastName, email, hashedPassword, phoneNumber, sex};
 
     const createUser = await User.create(newUser)
 
-
     console.log(createUser)
     // sign jwt token with user id as payload
-    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: createUser._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
@@ -24,7 +35,7 @@ exports.signup = async (req, res, next) => {
     res.status(201).json({
       status: "success",
       token,
-      User,
+      data: createUser
     });
   } catch (err) {
     res.status(400).json({

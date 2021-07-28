@@ -6,6 +6,14 @@ const userRoutes = require('./routes/userRoutes.js')
 
 const PORT = process.env.PORT || 8080;
 
+app.use(express.json())
+const db = require("./config/db")
+
+// // configure dotenv for environment variable
+// dotenv.config({ path: "./config.env" });
+// const app = express();
+
+db()
 
 app.get("/", (req, res) => {
     res.json({

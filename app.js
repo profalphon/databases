@@ -6,11 +6,12 @@ const db = require("./config/db")
 // configure dotenv for environment variable
 dotenv.config({ path: "./config.env" });
 const app = express();
-
-// db()
-
 // Body Parser
 app.use(express.json());
+
+db()
+
+
 
 // Mounting
 app.use("/api/v1/user", userRoutes);
